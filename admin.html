@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <style>
+        body {
+            background: #1a1a2f;
+            color: white;
+            font-family: Arial;
+            padding: 20px;
+        }
+        .user-card {
+            background: rgba(30,30,46,0.95);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .ban { background: #ff4444; color: white; }
+        .unban { background: #4caf50; color: white; }
+        .freeze { background: #64b5f6; color: white; }
+    </style>
+</head>
+<body>
+    <h1>👑 Админ панель</h1>
+    <div id="users"></div>
+    
+    <script>
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const container = document.getElementById('users');
+            
+            container.innerHTML = users.map(user => `
+                <div class="user-card">
+                    <div>
+                        <strong>@${user.username}</strong>
+                        ${user.isAdmin ? '👑' : ''}
+                        ${user.banned ? '🔨' : ''}
+                        ${user.frozen ? '❄️' : ''}
+                    </div>
+                    <div>
+                        <button class="ban" onclick="banUser('${user.username}')">
+                            ${user.banned ? 'Разбанить' : 'Забанить'}
+                        </button>
+                        <button class="freeze" onclick="freezeUser('${user.username}')">
+                            ${user.frozen ? 'Разморозить' : 'Заморозить'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function banUser(username) {
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users = users.map(u => {
+                if (u.username === username) {
+                    u.banned = !u.banned;
+                }
+                return u;
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            loadUsers();
+        }
+        
+        function freezeUser(username) {
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users = users.map(u => {
+                if (u.username === username) {
+                    u.frozen = !u.frozen;
+                }
+                return u;
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            loadUsers();
+        }
+        
+        loadUsers();
+        setInterval(loadUsers, 3000);
+    </script>
+</body>
+</html>
